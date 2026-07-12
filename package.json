@@ -4,7 +4,15 @@
   "private": true,
   "scripts": {
     "start": "http-server -p 8080",
+    "start-server": "node server/index.js",
     "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "plaid": "^11.7.0",
+    "dotenv": "^16.0.0",
+    "cors": "^2.8.5",
+    "body-parser": "^1.20.2"
   },
   "devDependencies": {
     "http-server": "^14.1.1",
