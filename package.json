@@ -1,0 +1,13 @@
+{
+  "name": "pocketbooks",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "http-server -p 8080",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "@playwright/test": "^1.41.0"
+  }
+}
