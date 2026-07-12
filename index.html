@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PocketBooks - Personal Finance Tracker</title>
+  <meta name="description" content="Simple, elegant QuickBooks for Dummies to track credit cards, rent, and individual expenses.">
+  <link rel="stylesheet" href="styles.css">
+  <!-- Google Fonts: Inter and Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Chart.js CDN for beautiful interactive charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-logo">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="url(#brand-grad)" />
+            <path d="M2 17L12 22L22 17" stroke="url(#brand-grad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M2 12L12 17L22 12" stroke="url(#brand-grad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <defs>
+              <linearGradient id="brand-grad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#8a2be2" />
+                <stop offset="1" stop-color="#00f2fe" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <span class="brand-name">PocketBooks</span>
+      </div>
+
+      <!-- Quick Cash Setup -->
+      <div class="cash-card">
+        <div class="cash-header">
+          <span>Available Cash</span>
+          <button id="edit-cash-btn" title="Edit Cash Balance">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+        </div>
+        <div class="cash-amount" id="total-cash">$0.00</div>
+      </div>
+
+      <nav class="nav-menu">
+        <button class="nav-item active" data-tab="dashboard">
+          <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+          Dashboard
+        </button>
+        <button class="nav-item" data-tab="expenses">
+          <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          Expenses
+        </button>
+        <button class="nav-item" data-tab="cards">
+          <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          Credit Cards
+        </button>
+        <button class="nav-item" data-tab="rent">
+          <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Rent Tracker
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <p>A simple way to manage your wallet.</p>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="top-bar">
+        <h1 id="page-title">Dashboard Overview</h1>
+        <div class="user-actions">
+          <button class="btn btn-primary" id="quick-add-expense-btn">
+            <span class="btn-plus">+</span> Add Expense
+          </button>
+        </div>
+      </header>
+
+      <!-- Content Views -->
+      <div class="content-body">
+        
+        <!-- Tab: Dashboard -->
+        <section id="tab-dashboard" class="tab-view active">
+          <!-- Summary Cards -->
+          <div class="stats-grid">
+            <div class="stat-card total-net-worth">
+              <div class="stat-info">
+                <h3>Net Balance</h3>
+                <div class="stat-value" id="net-worth-val">$0.00</div>
+                <p class="stat-desc">Cash minus Card Debt</p>
+              </div>
+              <div class="stat-icon gradient-green">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-info">
+                <h3>Credit Card Debt</h3>
+                <div class="stat-value text-danger" id="cc-debt-val">$0.00</div>
+                <p class="stat-desc" id="cc-limits-val">Limit Available: $0</p>
+              </div>
+              <div class="stat-icon gradient-red">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-info">
+                <h3>Rent This Month</h3>
+                <div class="stat-value" id="rent-status-val">Unpaid</div>
+                <p class="stat-desc" id="rent-due-val">Due on the 1st</p>
+              </div>
+              <div class="stat-icon gradient-blue">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-info">
+                <h3>This Month's Spending</h3>
+                <div class="stat-value text-warning" id="month-spending-val">$0.00</div>
+                <p class="stat-desc" id="month-spending-diff">From individual logs</p>
+              </div>
+              <div class="stat-icon gradient-purple">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-6"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Charts and Insights -->
+          <div class="dashboard-grid">
+            <div class="card chart-container-card">
+              <h3>Monthly Expense Categories</h3>
+              <div class="chart-wrapper">
+                <canvas id="categoryChart"></canvas>
+              </div>
+            </div>
+
+            <div class="card recent-activity-card">
+              <div class="card-header">
+                <h3>Recent Transactions</h3>
+                <button class="btn btn-text btn-view-all" data-target-tab="expenses">View All</button>
+              </div>
+              <div class="transaction-list" id="recent-transactions-list">
+                <!-- Managed dynamically -->
+                <div class="empty-state">No transactions recorded yet. Click "Add Expense" to get started!</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Tab: Expenses -->
+        <section id="tab-expenses" class="tab-view">
+          <div class="card ledger-card">
+            <div class="ledger-header">
+              <div class="filters">
+                <input type="text" id="expense-search" class="form-control" placeholder="Search description...">
+                <select id="expense-filter-category" class="form-control">
+                  <option value="">All Categories</option>
+                  <option value="Food">Food & Dining</option>
+                  <option value="Rent">Rent & Housing</option>
+                  <option value="Shopping">Shopping</option>
+                  <option value="Utilities">Utilities & Bills</option>
+                  <option value="Travel">Travel & Transport</option>
+                  <option value="Other">Other</option>
+                </select>
+                <select id="expense-filter-payment" class="form-control">
+                  <option value="">All Payment Methods</option>
+                  <option value="Cash">Cash</option>
+                  <!-- Credit cards dynamically appended here -->
+                </select>
+              </div>
+              <button class="btn btn-primary" id="add-expense-tab-btn">+ Log Expense</button>
+            </div>
+
+            <div class="table-responsive">
+              <table class="expense-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Category</th>
+                    <th>Paid Via</th>
+                    <th class="text-right">Amount</th>
+                    <th class="text-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="expense-table-body">
+                  <!-- JS inserts here -->
+                </tbody>
+              </table>
+              <div class="empty-state hidden" id="expense-empty-state">
+                No matching transactions found.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Tab: Credit Cards -->
+        <section id="tab-cards" class="tab-view">
+          <div class="cards-header-section">
+            <p class="section-desc">Manage credit card credit limits, record outstanding balances, and log payments to cards.</p>
+            <button class="btn btn-secondary" id="add-credit-card-btn">+ Add Credit Card</button>
+          </div>
+          
+          <div class="cards-display-grid" id="credit-cards-grid">
+            <!-- Dynamic card stack -->
+          </div>
+        </section>
+
+        <!-- Tab: Rent Tracker -->
+        <section id="tab-rent" class="tab-view">
+          <div class="rent-dashboard-grid">
+            <div class="card rent-config-card">
+              <h3>Rent Configurations</h3>
+              <form id="rent-config-form" class="rent-form">
+                <div class="form-group">
+                  <label for="rent-amount-input">Monthly Rent Amount ($)</label>
+                  <input type="number" id="rent-amount-input" class="form-control" placeholder="e.g. 1500" required>
+                </div>
+                <div class="form-group">
+                  <label for="rent-due-day">Due Day of Month</label>
+                  <input type="number" id="rent-due-day" class="form-control" min="1" max="31" placeholder="e.g. 1" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Save Configurations</button>
+              </form>
+            </div>
+
+            <div class="card rent-payment-card">
+              <h3>Rent Status & Payment History</h3>
+              <div class="rent-status-box" id="rent-status-box">
+                <div class="status-indicator unpaid">Unpaid</div>
+                <div class="rent-info-text">
+                  <h4 id="rent-month-label">Rent for June 2026</h4>
+                  <p id="rent-details-desc">Amount: $0.00 | Due: June 1st</p>
+                </div>
+                <button class="btn btn-success" id="pay-rent-btn">Mark as Paid</button>
+              </div>
+
+              <div class="rent-history-section">
+                <h4>Payment Logs</h4>
+                <div class="rent-history-list" id="rent-history-list">
+                  <!-- Dynamically populated -->
+                  <div class="empty-state">No rent payments recorded yet.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- MODAL: Add/Edit Expense -->
+  <div class="modal-backdrop" id="expense-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="expense-modal-title">Log Expense</h3>
+        <button class="close-btn" id="close-expense-modal">&times;</button>
+      </div>
+      <form id="expense-form">
+        <div class="form-group">
+          <label for="exp-desc">Description</label>
+          <input type="text" id="exp-desc" class="form-control" placeholder="e.g. Grocery Store" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group col">
+            <label for="exp-amount">Amount ($)</label>
+            <input type="number" step="0.01" id="exp-amount" class="form-control" placeholder="0.00" required>
+          </div>
+          <div class="form-group col">
+            <label for="exp-date">Date</label>
+            <input type="date" id="exp-date" class="form-control" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col">
+            <label for="exp-category">Category</label>
+            <select id="exp-category" class="form-control" required>
+              <option value="Food">Food & Dining</option>
+              <option value="Rent">Rent & Housing</option>
+              <option value="Shopping">Shopping</option>
+              <option value="Utilities">Utilities & Bills</option>
+              <option value="Travel">Travel & Transport</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group col">
+            <label for="exp-payment">Payment Method</label>
+            <select id="exp-payment" class="form-control" required>
+              <option value="Cash">Cash</option>
+              <!-- CC dynamically appended -->
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancel-expense-btn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Transaction</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Add/Edit Credit Card -->
+  <div class="modal-backdrop" id="cc-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Add Credit Card</h3>
+        <button class="close-btn" id="close-cc-modal">&times;</button>
+      </div>
+      <form id="cc-form">
+        <div class="form-group">
+          <label for="cc-name">Card Name / Bank</label>
+          <input type="text" id="cc-name" class="form-control" placeholder="e.g. Chase Sapphire" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group col">
+            <label for="cc-limit">Credit Limit ($)</label>
+            <input type="number" id="cc-limit" class="form-control" placeholder="5000" required>
+          </div>
+          <div class="form-group col">
+            <label for="cc-balance">Current Balance ($)</label>
+            <input type="number" id="cc-balance" class="form-control" placeholder="0" value="0">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col">
+            <label for="cc-due-day">Payment Due Day of Month</label>
+            <input type="number" id="cc-due-day" class="form-control" min="1" max="31" placeholder="e.g. 15" required>
+          </div>
+          <div class="form-group col">
+            <label for="cc-color">Card Accent Theme</label>
+            <select id="cc-color" class="form-control">
+              <option value="gradient-blue-purple">Midnight Nebula (Blue/Purple)</option>
+              <option value="gradient-orange-red">Sunset Glow (Orange/Red)</option>
+              <option value="gradient-green-blue">Ocean Wave (Green/Teal)</option>
+              <option value="gradient-dark">Matte Black (Dark Grey)</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancel-cc-btn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Add Card</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Set/Edit Cash Balance -->
+  <div class="modal-backdrop" id="cash-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Adjust Available Cash</h3>
+        <button class="close-btn" id="close-cash-modal">&times;</button>
+      </div>
+      <form id="cash-form">
+        <div class="form-group">
+          <label for="cash-amount-input">Cash/Savings Balance ($)</label>
+          <input type="number" step="0.01" id="cash-amount-input" class="form-control" placeholder="e.g. 5000" required>
+          <p class="form-help">Updating this directly sets your total liquid cash reserves.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancel-cash-btn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Update Balance</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Record Credit Card Payment -->
+  <div class="modal-backdrop" id="cc-payment-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Record Credit Card Payment</h3>
+        <button class="close-btn" id="close-cc-pay-modal">&times;</button>
+      </div>
+      <form id="cc-payment-form">
+        <input type="hidden" id="cc-pay-id">
+        <div class="form-group">
+          <label>Paying Card</label>
+          <div id="cc-pay-name" style="font-weight: 600; font-size: 1.1rem; margin-bottom: 0.5rem;">Card Name</div>
+        </div>
+        <div class="form-group">
+          <label for="cc-pay-amount">Payment Amount ($)</label>
+          <input type="number" step="0.01" id="cc-pay-amount" class="form-control" required>
+          <p class="form-help" id="cc-pay-help-text">Outstanding Balance: $0.00</p>
+        </div>
+        <div class="form-group">
+          <label for="cc-pay-source">Source Account</label>
+          <select id="cc-pay-source" class="form-control">
+            <option value="Cash">Available Cash</option>
+          </select>
+          <p class="form-help">This will subtract from your Available Cash.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancel-cc-pay-btn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Record Payment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
